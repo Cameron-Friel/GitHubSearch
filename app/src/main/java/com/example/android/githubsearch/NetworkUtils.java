@@ -6,28 +6,26 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 /**
  * Created by hessro on 1/30/18.
  */
 
 public class NetworkUtils {
-    public static String doHTTPGet(URL url) throws IOException {
-        HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
 
-        InputStream inputStream;
+    private static final OkHttpClient mHTTPClient = new OkHttpClient();
+
+    public static String doHTTPGet(String url) throws IOException {
+        Request req = new Request.Builder().url(url).build();
+
+        Response res = mHTTPClient.newCall(req).execute();
         try {
-            inputStream = urlConnection.getInputStream();
+            return res.body().string();
         } finally {
-            urlConnection.disconnect();
-        }
-
-        Scanner scanner = new Scanner(inputStream);
-        scanner.useDelimiter("\\A");
-
-        if (scanner.hasNext()) {
-            return scanner.next();
-        } else {
-            return null;
+            res.close();
         }
     }
 }

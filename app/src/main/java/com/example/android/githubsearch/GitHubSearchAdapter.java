@@ -13,9 +13,9 @@ import java.util.ArrayList;
  */
 
 public class GitHubSearchAdapter extends RecyclerView.Adapter<GitHubSearchAdapter.SearchResultViewHolder> {
-    private ArrayList<String> mSearchResultsList;
+    private ArrayList<GitHubUtils.SearchResult> mSearchResultsList;
 
-    public void updateSearchResults(ArrayList<String> searchResultsList) {
+    public void updateSearchResults(ArrayList<GitHubUtils.SearchResult> searchResultsList) {
         mSearchResultsList = searchResultsList;
         notifyDataSetChanged();
     }
@@ -49,8 +49,8 @@ public class GitHubSearchAdapter extends RecyclerView.Adapter<GitHubSearchAdapte
             mSearchResultTV = (TextView)itemView.findViewById(R.id.tv_search_result);
         }
 
-        public void bind(String searchResult) {
-            mSearchResultTV.setText(searchResult);
+        public void bind(GitHubUtils.SearchResult searchResult) {
+            mSearchResultTV.setText(searchResult.fullName);
         }
     }
 }

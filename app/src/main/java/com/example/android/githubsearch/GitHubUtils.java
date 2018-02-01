@@ -2,8 +2,11 @@ package com.example.android.githubsearch;
 
 import android.net.Uri;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * Created by hessro on 1/30/18.
@@ -15,18 +18,39 @@ public class GitHubUtils {
     final static String GITHUB_SEARCH_SORT_PARAM = "sort";
     final static String GITHUB_SEARCH_SORT_VALUE = "stars";
 
-    public static URL buildGitHubSearchURL(String searchQuery) {
-        Uri searchUri = Uri.parse(GITHUB_SEARCH_BASE_URL).buildUpon()
+    public static class SearchResult {
+        public String fullName;
+        public String description;
+        public String htmlURL;
+        public int stars;
+    }
+
+    public static String buildGitHubSearchURL(String searchQuery) {
+        return Uri.parse(GITHUB_SEARCH_BASE_URL).buildUpon()
                 .appendQueryParameter(GITHUB_SEARCH_QUERY_PARAM, searchQuery)
                 .appendQueryParameter(GITHUB_SEARCH_SORT_PARAM, GITHUB_SEARCH_SORT_VALUE)
-                .build();
+                .build()
+                .toString();
+    }
 
-        URL url = null; //new URL(searchUri.toString());
+    public static ArrayList<SearchResult> parseSearchResultsJSON(String searchResultsJSON) {
         try {
-            url = new URL(searchUri.toString());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+            JSONObject searchResultsObj = new JSONObject(searchResultsJSON);
+            JSONArray searchResultsItems = searchResultsObj.getJSONArray("items");
+
+            ArrayList<SearchResult> searchResultsList = new ArrayList<SearchResult>();
+            for (int i = 0; i < searchResultsItems.length(); i++) {
+                SearchResult result = new SearchResult();
+                JSONObject resultItem = searchResultsItems.getJSONObject(i);
+                result.fullName = resultItem.getString("full_name");
+                result.description = resultItem.getString("description");
+                result.htmlURL = resultItem.getString("html_url");
+                result.stars = resultItem.getInt("stargazers_count");
+                searchResultsList.add(result);
+            }
+            return searchResultsList;
+        } catch (JSONException e) {
+            return null;
         }
-        return url;
     }
 }
